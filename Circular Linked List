@@ -1,0 +1,163 @@
+#include <iostream>
+#include "linkedlist.h"
+
+/* run this program using the console pauser or add your own getch, system("pause") or input loop */
+
+int main(int argc, char** argv) {
+	CircularLL* list = new CircularLL();
+	char op;
+	int num;
+	do {
+		cout << "Op: ";
+		cin >> op;
+		switch (op) {
+			case 'f':
+				cin >> num;
+				list->addFirst(num);
+				break;
+			case 'l':
+				cin >> num;
+				list->addLast(num);
+				break;
+			case 'p':
+				list->print();
+				break;
+			case 'r':
+				cout << "Removed " << list->removeFirst() << endl;
+				break;
+			case 't':
+				cout << "Tail: " << list->getTail() << endl;
+				break;
+			case 'O':
+				list->rotate();
+				break;
+			case 'x':
+				cout << "Exiting";
+				break;
+		}
+	} while (op != 'x');
+	return 0;
+}
+
+// Header File
+struct node {
+	int elem;
+	node* next;
+};
+
+// Header File
+class List {
+	public:
+	virtual void add(int num) = 0;
+	virtual int get(int pos) = 0;
+	virtual int remove(int num) = 0;
+	virtual void print() = 0;
+};
+
+// Header File
+#include "list.h"
+#include <iostream>
+#include "node.h"
+using namespace std;
+
+class CircularLL : public List {
+	node* tail;
+	int size;
+
+public:
+	void add(int num) {
+		addFirst(num);
+	}
+
+	void addFirst(int num) {
+        // TODO implement addFirst() at O(1)
+        node* new_node = new node;
+        new_node->elem = num;
+        if (tail == nullptr) {
+            tail = new_node;
+            tail->next = tail;  // Make it circular
+        } else {
+            new_node->next = tail->next;
+            tail->next = new_node;
+        }
+        size++;
+	}
+
+	void addLast(int num) {
+        // TODO implement addLast() at O(1)
+        node* new_node = new node;
+        new_node->elem = num;
+        if (tail == nullptr) {
+            tail = new_node;
+            tail->next = tail;  // Make it circular
+        } else {
+            new_node->next = tail->next;
+            tail->next = new_node;
+            tail = new_node;
+        }
+        size++;
+
+	}
+
+	int get(int pos) {
+		// IGNORE
+		return 0;
+	}
+
+	int getTail() {
+        // TODO implement getTail() at O(1)
+        if (tail == nullptr) {
+            return -1;
+        }
+        return tail->elem;
+	}
+
+	void rotate() {
+        // TODO implement rotate() at O(1)
+        if (tail != nullptr) {
+            tail = tail->next;
+        }
+	}
+
+	int remove(int num) {
+		// IGNORE
+		return 0;
+	}
+
+	int removeFirst() {
+        // TODO implement removeFirst at O(1)
+        if (tail == nullptr) {
+            return -1;
+        }
+        int removed_value = tail->next->elem;
+        if (tail->next == tail) {
+            delete tail;
+            tail = nullptr;
+        } else {
+            node* temp = tail->next;
+            tail->next = tail->next->next;
+            delete temp;
+        }
+        size--;
+        return removed_value;
+	}
+
+    void print() {
+        cout << "Size: " << size << endl;
+        if (tail == nullptr) {
+            cout << "Empty" << endl;
+        } else {
+            node* current = tail->next;
+            for (int i = 0; i < size; i++) {
+                cout << current->elem;
+                if (i < size - 1) {
+                    cout << "->";
+                }
+                current = current->next;
+            }
+            cout << "->" << current->elem << endl;
+        }
+    }
+
+
+};
