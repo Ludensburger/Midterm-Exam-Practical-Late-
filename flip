@@ -1,0 +1,150 @@
+// Warning: Do not modify this file.
+// Create the list's and linkedlist.h's removeAll method
+
+#include <iostream>
+#include "linkedlist.h"
+
+int main() {
+    node* nodes[20];
+    int size = 0;
+	List* list = new LinkedList();
+    int input, num;
+    char op;
+    do {
+    	cout << "Enter op: ";
+    	cin >> op;
+    	switch (op) {
+    		case 'a' :
+		    	cin >> input;
+		    	nodes[size++] = list->add(input);
+		    	break;
+            case 'f':
+                list->flip();
+                break;
+		    case 'p':
+		    	list->print();
+                break;
+            case 'c':
+                cout << "Checking nodes' elements: " << endl;
+                for (int i = 0; i < size; i++) {
+                    cout << nodes[i]->elem << " ";
+                }
+                cout << endl;
+		    	break;
+		    case 'x':
+		    	cout << "Exiting";
+		    	break;
+		}
+	} while (op != 'x');
+    return 0;
+}
+
+// Header File
+struct node {
+	int elem;
+	node* next;
+};
+
+// Header File
+#include "node.h"
+class List {
+    public:
+    virtual node* add(int) = 0;
+    virtual int get(int pos) = 0;
+    virtual int remove(int num) = 0;
+    virtual void print() = 0;
+
+    // TODO add virtual method flip here
+    virtual void flip() = 0;
+};
+
+// Header File
+#include <cstdlib>
+#include <iostream>
+#include "list.h"
+using namespace std;
+
+class LinkedList : public List {
+	node* head;
+	node* tail;
+	int size;
+
+	public:
+	node* add(int num) {
+		node* n = (node*) calloc( 1, sizeof(node) );
+		n->elem = num;
+		if (size == 0) {
+			head = n;
+			tail = n;
+		} else {
+			tail->next = n;
+			tail = n;
+		}
+		size++;
+        return n;
+	}
+
+    int get(int pos) {
+        // IGNORE for now
+        return 0;
+    }
+
+    int remove(int num) {
+    	node* curr = head;
+    	node* prev;
+    	while (curr) {
+    		if (curr->elem == num) {
+    			prev->next = curr->next;
+    			size--;
+    			return 0;
+			}
+			prev = curr;
+			curr = curr->next;
+
+		}
+	}
+
+    // TODO add the flip method
+    void flip() {
+
+    if (size <= 1) {
+        // No need to flip if there are 0 or 1 elements
+        return;
+    }
+
+    node* prev = nullptr;
+    node* current = head;
+    node* next_node;
+
+    tail = head; // Update the tail to the current head
+
+    while (current != nullptr) {
+        next_node = current->next; // Store the next node temporarily
+        current->next = prev; // Reverse the next pointer to point to the previous node
+        prev = current; // Move the previous pointer to the current node
+        current = next_node; // Move the current pointer to the next node
+    }
+
+    head = prev;
+    }
+
+
+    // DO NOT modify the code below.
+    void print() {
+    	node* curr = head;
+    	if (size == 0) {
+    		cout << "Empty" << endl;
+		} else {
+	    	while (true) {
+	    		cout << curr->elem;
+	    		if (curr != tail) {
+	    			cout << " -> ";
+				} else {
+					cout << endl;
+                    break;
+				}
+	    		curr = curr->next;
+			}
+		}
+    }
+};
