@@ -1,0 +1,209 @@
+#include <iostream>
+#include "linkedlist.h"
+
+/* run this program using the console pauser or add your own getch, system("pause") or input loop */
+
+int main(int argc, char** argv) {
+	DoublyLL* list = new DoublyLL();
+	char op;
+	int num, pos;
+	do {
+		cout << "Op: ";
+		cin >> op;
+		switch (op) {
+			case 'a':
+				cin >> num;
+				pos = list->add(num);
+				if (pos == 1) {
+					cout << "Added from head" << endl;
+				} else {
+					cout << "Added from tail" << endl;
+				}
+				break;
+			case 'p':
+				list->print();
+				break;
+			case 'x':
+				cout << "Exiting";
+				break;
+		}
+	} while (op != 'x');
+	return 0;
+}
+
+// Header file
+struct node {
+	int elem;
+	node *next, *prev;
+};
+
+// Header file
+class List {
+	public:
+	virtual int add(int num) = 0;
+	virtual int get(int pos) = 0;
+	virtual int remove(int num) = 0;
+	virtual void print() = 0;
+};
+
+// Header file
+#include "list.h"
+#include <iostream>
+#include <cmath>
+#include "node.h"
+using namespace std;
+
+class DoublyLL : public List {
+	node *head, *tail;
+	int size;
+
+	void addBetween(int num, node* pred, node* succ) {
+		node* n = (node*)malloc( sizeof(node) );
+		n->elem = num;
+		n->next = succ;
+		n->prev = pred;
+		pred->next = n;
+		succ->prev = n;
+		size++;
+	}
+
+	void removeNode(node* n) {
+        // IGNORE
+	}
+
+public:
+	DoublyLL() {
+		head = (node*) calloc(1, sizeof(node));
+		tail = (node*) calloc(1, sizeof(node));
+		head->next = tail;
+		tail->prev = head;
+		size = 0;
+	}
+
+	void addFirst(int num) {
+		addBetween(num, head, head->next);
+	}
+
+	void addLast(int num) {
+		addBetween(num, tail->prev, tail);
+	}
+
+	void removeFirst() {
+		if (size == 0) {
+			return;
+		}
+		head = head->next;
+		if (head) {
+			free(head->prev);
+			head->prev = nullptr;
+		} else {
+			free(tail);
+			tail = nullptr;
+		}
+		size--;
+	}
+
+	void removeLast() {
+		if (size == 0) {
+			return;
+		}
+		tail = tail->prev;
+		if (tail) {
+			free(tail->next);
+			tail->next = nullptr;
+		} else {
+			free(head);
+			head = nullptr;
+		}
+		size--;
+	}
+
+	int add(int num) {
+    // TODO implement add
+
+            // If list is empty, add from head
+            if (size == 0) {
+                addFirst(num);
+                return 1;
+     
+            } 
+
+            // Figure out the shortest path
+            int fromHead = abs(head->next->elem - num); 
+            int fromTail = abs(tail->prev->elem - num);
+            
+            // Add from head if num is closer to the head or just the same
+            // Note: DO NOT TOUCH THE SENTINELS else DOOM (wont work)
+            
+            if(fromHead <= fromTail) {
+                // because header is sentinel or dummy use its next
+                node* curr = head->next;
+                
+                while (curr != tail && curr->elem < num) {
+                    curr = curr->next;
+                }
+                addBetween(num, curr->prev, curr);
+                return 1;
+
+            // Add from tail            
+            } else {
+                // because trailer is sentinel or dummy use its previous
+                node* curr = tail->prev;
+                
+                while (curr != head && curr->elem > num) {
+                    curr = curr->prev;
+                }
+                addBetween(num, curr, curr->next);
+
+            return 2;
+            }      
+            
+	}
+
+	int get(int pos) {
+		node* curr = head;
+		int ctr = 1;
+		while (ctr != pos) {
+			curr = curr->next;
+			ctr++;
+		}
+		return curr->elem;
+	}
+
+	int remove(int num) {
+		node* curr = head->next;
+		int pos = 1;
+		while (curr != tail) {
+			if (curr->elem == num) {
+				removeNode(curr);
+				return pos;
+			}
+			curr = curr->next;
+			pos++;
+		}
+		return -1;
+	}
+
+	void print() {
+		cout << "Size: " << size << endl;
+		node* curr = head->next;
+		cout << "From HEAD: ";
+		while (curr != tail) {
+			cout << curr->elem;
+			curr = curr->next;
+            if (curr != tail) {
+                cout << "->";
+            }
+		}
+		curr = tail->prev;
+		cout << endl << "From TAIL: ";
+		while (curr != head) {
+			cout << curr->elem;
+			curr = curr->prev;
+            if (curr != head) {
+                cout << "<-";
+            }
+		}
+		cout << endl;
+	}
+};
